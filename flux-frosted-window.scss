@@ -1,0 +1,67 @@
+/**
+flux-frosted-window
+
+@group Flux Capacitators
+@author Todd Miller <todd@rainydaymedia.net>
+*/
+
+.bg, .glass {
+    background-image: var(--background-image);
+    background-position: var(--background-position, center);
+    background-size: cover;
+}
+
+.bg {
+    height: var(--component-height, 100vh);
+    position: relative;
+}
+
+.glass {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: var(--padding-top, 0);
+    padding-bottom: var(--padding-bottom, 0);
+    background-clip: content-box;
+    filter: blur(var(--glass-blur, 5px));
+    z-index: 99;
+}
+
+.content-wrapper {
+    margin-right: var(--gutter-right, 0);
+    margin-left: var(--gutter-left, 0);
+    padding-top: var(--padding-top, 0);
+    padding-bottom: var(--padding-bottom, 0);
+    position: relative;
+    height: 100%;
+
+    .the-content {
+        position: absolute;
+        top: var(--pos-top, auto);
+        right: var(--pos-right, auto);
+        bottom: var(--pos-bottom, auto);
+        left: var(--pos-left, auto);
+        border: var(--glass-border, 0);
+        border-radius: var(--glass-border-radius, 0);
+        background-color: var(--window-tint, rgba(0, 0, 0, 0.5));
+        z-index: 100;
+    }
+}
+
+:host([auto-position]) {
+    .content-wrapper {
+        .the-content {
+            position: inherit;
+            max-width: var(--glass-max-width, auto);
+            margin: 0 auto;
+        }
+    }
+}
+
+:host([no-filters]) {
+    .glass {
+        background-image: var(--fallback-background);
+    }
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Flux Capacitators</title>
+
+    <script type="text/javascript" src="../../jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="../flux-frosted-window.html">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .window-wrapper {
+            padding: 1em 0.5em 2em;
+        }
+
+        h1, p {
+            font-family: Helvetica, sans-serif;
+            color: white;
+            font-weight: 300;
+            text-align: center;
+        }
+
+        p {
+            font-size: 80%;
+        }
+
+        .left, .right {
+            display: none;
+            position: absolute;
+            width: 47.5%;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+
+        @media screen and (min-width: 768px) {
+            .window-wrapper {
+                padding: 8em 3em 5em;
+            }
+
+            .left, .right {
+                display: block;
+            }
+
+            p {
+                font-size: 100%;
+            }
+        }
+    </style>
+
+    <style is="custom-style">
+        flux-frosted-window.auto-positioned {
+            --background-image: url(cat.jpg);
+            --fallback-background: url(cat-blurred.jpg);
+            --background-position: top center;
+            --padding-top: 10em;
+            --padding-bottom: 5em;
+            --glass-blur: 5px;
+            --glass-max-width: 1000px;
+            --gutter-right: 2em;
+            --gutter-left: 4em;
+            --glass-border: 3px solid white;
+        }
+
+        flux-frosted-window.standard {
+            --background-image: url(cat.jpg);
+            --fallback-background: url(cat-blurred.jpg);
+            --background-position: top center;
+            --component-height: 50vh;
+            --glass-blur: 5px;
+            --pos-bottom: 2%;
+            --pos-right: 5%;
+            --gutter-left: 20px;
+            --glass-border: 3px solid white;
+            --glass-border-radius: 8px;
+        }
+
+        flux-frosted-window.big {
+            --background-image: url(cat.jpg);
+            --fallback-background: url(cat-blurred.jpg);
+            --background-position: top center;
+            --glass-blur: 10px;
+            --pos-top: 20vh;
+            --pos-right: 10vw;
+            --pos-bottom: 10vh;
+            --pos-left: 25vw;
+            --glass-border: 1px solid white;
+            --glass-border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<flux-frosted-window class="auto-positioned" auto-position>
+    <div class="window-wrapper">
+        <h1>This is neat!</h1>
+        <p>Cats are so funny and cute and internets.</p>
+        <p>This is a window with the auto-position attribute.</p>
+        <p>Its using em based values.</p>
+    </div>
+</flux-frosted-window>
+
+<p></p><p></p>
+
+<flux-frosted-window class="standard">
+    <div class="window-wrapper">
+        <h1>This is neat!</h1>
+        <p>Cats are so funny and cute and internets.</p>
+        <p>This is a manually positioned window, two position properties set.</p>
+        <p>Its using percentage based values.</p>
+    </div>
+</flux-frosted-window>
+
+<p></p><p></p>
+
+<flux-frosted-window class="big">
+    <div class="window-wrapper">
+        <h1>This is neat!</h1>
+        <p>Cats are so funny and cute and internets.</p>
+        <p>This is a manually positioned window, with all four position properties set.</p>
+        <p>Its using viewport based values.</p>
+    </div>
+</flux-frosted-window>
+
+<p></p><p></p>
+
+<flux-frosted-window class="auto-positioned left" auto-position>
+    <div class="window-wrapper">
+        <h1>This is neat!</h1>
+        <p>Cats are so funny and cute and internets.</p>
+        <p>This is an auto positioned window, that takes up half the browser width.</p>
+    </div>
+</flux-frosted-window>
+
+<flux-frosted-window class="auto-positioned right" auto-position>
+    <div class="window-wrapper">
+        <h1>This is neat!</h1>
+        <p>Cats are so funny and cute and internets.</p>
+        <p>This is an auto positioned window, that takes up half the browser width.</p>
+    </div>
+</flux-frosted-window>
+
+</body>
+</html>

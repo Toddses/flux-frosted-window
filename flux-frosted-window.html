@@ -1,0 +1,247 @@
+<!--
+Flux Capacitators: https://github.com/FluxCapacitators
+'flux-frosted-window' is a fully responsive component with a frosted glass effect,
+blurring the background behind the glass element. Has several custom CSS options
+for creating and positioning the element. Can also be automatically positioned
+for a more centered element.
+
+Example Usage:
+    <flux-frosted-window auto-position>
+        <h1>Content is King!</h1>
+        <p>But nobody cares.</p>
+    </flux-frosted-window>
+
+### Styling
+
+Attributes available:
+auto-position - boolean to allow the glass element to position itself
+
+Custom properties for both manual and auto positioning:
+
+Custom Property | Description | Default
+#######################################
+--background-image | reference to the background image | none
+--fallback-image | a pre-blurred background for browsers that don't support filters | none
+--background-position | positioning of the background image | center
+--glass-blur | amount of blur in pixels | 5px
+--gutter-right | right side gutter | 0
+--gutter-left | left side gutter | 0
+--glass-border | full border property on the glass element | 0
+--glass-border-radius | radius of the border on the glass element | 0
+--window-tint | rgba() value for the glass element background | rgba(0, 0, 0, 0.5)
+
+Custom properties for manual positioning:
+For manual positioning, you must set at least one vertical and horizontal property
+for the element to be positioned properly, but you can set all 4 for full control
+
+Custom Property | Description | Default
+#######################################
+--component-height | height of the background element | 100vh
+--pos-top | top position of the glass element | none
+--pos-right | right position of the glass element | none
+--pos-bottom | bottom position of the glass element | none
+--pos-left | left position of the glass element | none
+
+Custom properties for auto positioning:
+
+Custom Property | Description | Default
+#######################################
+--padding-top | space between the top of the component and the glass window | none
+--padding-bottom | space between the bottom of the component and the glass window | none
+--glass-max-width | max-width of the glass element | none
+
+A note on positioning and the gutters.
+For an auto-position component, you likely want to set a left and right gutter,
+so your window doesn't get pushed all the way to the edge of the browser.
+For manual positioning, you either want to set one side's gutter, or no gutter
+at all. If you position both the left and right side, don't use any gutters.
+If you position only one side, set a gutter on the opposite side and it won't
+smush up on the edge of the browser.
+
+@group Flux Capacitators
+@author Todd Miller <todd@rainydaymedia.net>
+@demo demo/index.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="flux-frosted-window">
+    <link rel="import" type="css" href="flux-frosted-window.css">
+
+    <template>
+        <div id="bg" class="bg">
+            <div id="glass" class="glass"></div>
+            <div id="wrapper" class="content-wrapper">
+                <div id="content" class="the-content">
+                    <content></content>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+    Polymer({
+        is: "flux-frosted-window",
+        properties: {
+            /**
+             * Set to true to position the content automatically,
+             * and false to set it manually
+             *
+             * @attribute autoPosition
+             * @type boolean
+             * @default false
+             */
+            autoPosition: {
+                type: Boolean,
+                value: false
+            },
+            /**
+             * This is automatically set to determine if the browser supports
+             * CSS filters, and if not the element can make use of the fallback
+             * image.
+             *
+             * @attribute noFilters
+             * @type boolean
+             * @default false
+             */
+            noFilters: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            }
+        },
+
+        // Initializes everything
+        attached: function() {
+            var func = (this.autoPosition) ? this._autoResize : this._resize;
+            this._hasFilters();
+
+            // call the function directly and when the browser loads for
+            // cross-browser compatibility
+            // chrome wouldn't size correctly until after the load event
+            // is fired, but IE wouldn't fire the load event at all
+            func.call(this);
+            window.addEventListener('load', func.bind(this));
+
+            // for full responsiveness, recalc everything on browser resizing
+            window.addEventListener('resize', function () {
+                this.debounce('resize', func, 250);
+            }.bind(this));
+        },
+
+        // Resizes the glass content box for manual positioning
+        _resize: function() {
+            var els = this.$;
+
+            // use the width/height of the full element less the content width/height
+            // to calculate the padding of the auto positioned sides
+            var width  = $(els.bg).outerWidth() - $(els.content).outerWidth(),
+                height = $(els.bg).outerHeight() - $(els.content).outerHeight();
+
+            // need a reliable cross-browser solution to allow the user to
+            // position the content with px, percent, em, or auto
+            // the hiding and showing here lets us get a result of 'auto' for
+            // for the positions in firefox
+            $(els.content).hide();
+            var left   = this._parse(els.content, 'left'),
+                right  = this._parse(els.content, 'right'),
+                top    = this._parse(els.content, 'top'),
+                bottom = this._parse(els.content, 'bottom');
+            $(els.content).show();
+
+            // now we can calculate the correct values based on the content
+            // position
+            var right  = (right === 'auto') ? (width - left) : right,
+                left   = (left === 'auto') ? (width - right) : left,
+                top    = (top === 'auto') ? (height - bottom) : top,
+                bottom = (bottom === 'auto') ? (height - top) : bottom;
+
+            // and fill in the properties we want
+            // padding is used here to leverage the background-clip property
+            // and show the blurred background only in the content box
+            this._set(els.glass, 'padding-right', right)
+                ._set(els.glass, 'padding-left', left)
+                ._set(els.glass, 'padding-top', top)
+                ._set(els.glass, 'padding-bottom', bottom);
+        },
+
+        // Resizes the background element and the glass element for auto positioning
+        _autoResize: function () {
+            var els = this.$;
+
+            // calculate the full height that the background should be -
+            // the top and bottom padding set by the user, plus the content height
+            var h = this._parse(els.wrapper, 'padding-top') + this._parse(els.wrapper, 'padding-bottom') + this._parse(els.content, 'height');
+
+            // calculate the positioning of the glass element
+            var p     = ($(els.wrapper).outerWidth() - $(els.content).outerWidth()) / 2,
+                left  = p + this._parse(els.wrapper, 'margin-left'),
+                right = p + this._parse(els.wrapper, 'margin-right');
+
+            // set all the new values, using padding to leverage the
+            // background-clip property
+            this._set(els.bg, 'height', h)
+                ._set(els.glass, 'padding-left', left)
+                ._set(els.glass, 'padding-right', right);
+        },
+
+        /**
+         * Parse out the float value from the given element and property.
+         * Parsing the float value lets us get at subpixels for more
+         * precise positioning
+         *
+         * @param Object el - the Element to check
+         * @param String prop - the property to check
+         * @return Mixed - the string 'auto' or the pixel value as a float
+         */
+        _parse: function (el, prop) {
+            var val = $(el).css(prop);
+
+            // Webkit-ish browsers can return a percentage value when the element
+            // is hidden, but we want a pixel value, so need to convert it
+            if (val.indexOf('%') >= 0) {
+                var vert = (prop === 'top' || prop === 'bottom') ? true : false,
+
+                // find the decimal value for the given percentage
+                    x = parseFloat(val) / 100,
+
+                // get the pixels for the given percentage of the background element
+                    val = (prop === 'top' || prop === 'bottom') ? $(this.$.bg).outerHeight() * x
+                                                                : $(this.$.bg).outerWidth() * x;
+            }
+
+            return (val === 'auto') ? 'auto' : parseFloat(val);
+        },
+
+        /**
+         * Set the CSS property to the given value on the given element
+         *
+         * @param Object el - the element to modify
+         * @param String prop - the property to modify
+         * @param Mixed val - the new property value
+         * @return Object - return itself so we can function chain
+         */
+        _set: function (el, prop, val) {
+            $(el).css(prop, val);
+            return this;
+        },
+
+        // Test if the browser supports CSS filters - at this point only
+        // IE10 and IE11 do not
+        // This is essentially the same method Modernizr uses
+        // http://modernizr.com/
+        _hasFilters: function () {
+            var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+            var el = document.createElement('div');
+            el.style.cssText = prefixes.join('filter' + ':blur(2px); ');
+            var hasFilters = !!el.style.length && ((document.documentMode === undefined || document.documentMode > 9));
+
+            // set the component's property which will automatically be
+            // reflected to the component's attribute
+            if (!hasFilters)
+                this.noFilters = true;
+        }
+    });
+    </script>
+</dom-module>
+

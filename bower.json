@@ -1,0 +1,30 @@
+{
+  "name": "flux-frosted-window",
+  "version": "1.0.0",
+  "authors": [
+    "Todd Miller <todd@rainydaymedia.net>"
+  ],
+  "description": "Fully responsive frosted glass effect, with a blurred background behind the glass window.",
+  "main": "flux-frosted-window.html",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/FluxCapacitators/flux-frosted-window.git"
+  },
+  "ignore": [],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "flux-capacitators",
+    "flux",
+    "frosted-window"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/FluxCapacitators/flux-frosted-window",
+  "dependencies": {
+    "polymer": "~1.0.6",
+    "jquery": "~2.1.4"
+  },
+  "devDependencies": {
+    "webcomponentsjs": "~0.7.9"
+  }
+}
